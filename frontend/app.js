@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:3000";
+
 
 const app = {
     state: {
@@ -11,7 +11,8 @@ const app = {
         console.log("App Initialized");
 
         // Initial Load
-        app.showSection('menu');
+        // Initialize Auth which handles initial section
+        auth.init();
 
         // Event Listeners
         document.getElementById('menu-form').addEventListener('submit', app.handleSaveMenu);
@@ -41,6 +42,8 @@ const app = {
             app.state.cart = []; // Reset cart on entry? Or keep it. Let's reset for fresh start.
             app.renderCart();
             app.loadMenuForCustomer();
+            document.getElementById('display-cust-id').textContent = auth.currentUser ? auth.currentUser.username : '';
+            app.loadCustomerOrders();
         }
         if (id === 'staff') app.loadActiveOrders();
     },
@@ -213,14 +216,14 @@ const app = {
     },
 
     placeOrder: async () => {
-        const custId = document.getElementById('cust-id').value.trim();
+        const custId = auth.currentUser ? auth.currentUser.username : null;
         const priority = document.getElementById('cust-priority').checked;
         const resultDiv = document.getElementById('order-result');
 
         resultDiv.textContent = "";
         resultDiv.className = "msg";
 
-        if (!custId) return alert("Enter Customer ID");
+        if (!custId) return alert("Not logged in");
         if (app.state.cart.length === 0) return alert("Cart is empty");
 
         const payload = {
@@ -249,12 +252,52 @@ const app = {
             // clear
             app.state.cart = [];
             app.renderCart();
-            document.getElementById('cust-id').value = "";
+            // User ID is fixed, no need to clear input
             app.loadMenuForCustomer(); // Refresh stock
+            app.loadCustomerOrders(); // Refresh orders list
 
         } catch (err) {
             resultDiv.textContent = `Error: ${err.message}`;
             resultDiv.className = "msg error";
+        }
+    },
+
+    // ================= CUSTOMER ORDERS =================
+    loadCustomerOrders: async () => {
+        if (!auth.currentUser) return;
+        const container = document.getElementById('my-orders-list');
+        if (!container) return;
+        container.innerHTML = 'Loading...';
+        try {
+            const res = await fetch(`${API_BASE_URL}/orders/customer/${auth.currentUser.username}`);
+            const orders = await res.json();
+
+            if (!orders || orders.length === 0) {
+                container.innerHTML = '<p>No orders yet.</p>';
+                return;
+            }
+
+            let html = '<ul style="list-style:none; padding:0">';
+            orders.forEach(o => {
+                html += `
+                    <li style="border-bottom:1px solid #ddd; padding: 10px 0;">
+                        <div style="display:flex; justify-content:space-between; align-items:center">
+                            <strong>Status: <span class="status-badge status-${o.status}">${o.status}</span></strong>
+                            <span style="color:#666; font-size:0.9em">${new Date(o.createdAt).toLocaleString()}</span>
+                        </div>
+                        <div style="margin-top:5px">
+                             Items: ${o.items.map(i => `${i.name} (x${i.qty})`).join(', ')}
+                        </div>
+                        <div style="font-weight:bold; margin-top:5px">Total: $${o.totalPrice}</div>
+                    </li>
+                 `;
+            });
+            html += '</ul>';
+            container.innerHTML = html;
+
+        } catch (err) {
+            console.error(err);
+            container.innerHTML = 'Error loading orders';
         }
     },
 

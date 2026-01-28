@@ -11,7 +11,7 @@ export class OrdersService {
   constructor(
     @InjectModel(Order.name) private orderModel: Model<Order>,
     @InjectModel(MenuItem.name) private menuModel: Model<MenuItem>,
-  ) {}
+  ) { }
 
   // Fill name/price and calculate total
   async create(dto: CreateOrderDto) {
@@ -133,6 +133,14 @@ export class OrdersService {
       .sort({ isPriority: -1, createdAt: -1 })
       .exec();
   }
+
+  async getOrdersByCustomer(customerId: string) {
+    return this.orderModel
+      .find({ customerId })
+      .sort({ createdAt: -1 })
+      .exec();
+  }
+
 
   // Add updateStatus logic
   async updateStatus(orderId: string, newStatus: OrderStatus) {

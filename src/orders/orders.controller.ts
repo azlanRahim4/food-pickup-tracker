@@ -5,7 +5,7 @@ import { OrdersService } from './orders.service';
 
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(private readonly ordersService: OrdersService) { }
 
   @Post()
   create(@Body() dto: CreateOrderDto) {
@@ -16,6 +16,12 @@ export class OrdersController {
   getActive() {
     return this.ordersService.getActiveOrders();
   }
+
+  @Get('customer/:customerId')
+  getByCustomer(@Param('customerId') customerId: string) {
+    return this.ordersService.getOrdersByCustomer(customerId);
+  }
+
 
   // Debug endpoint: shows all orders (including PickedUp/Cancelled/Abandoned)
 

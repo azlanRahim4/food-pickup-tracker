@@ -1,27 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Food Pickup Tracker MVP</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
-    <header>
+    <header id="main-header" class="hidden">
         <h1>Food Order Pickup Tracker</h1>
+        <div id="user-info"></div>
         <nav>
-            <button onclick="app.showSection('menu')">Menu Management</button>
-            <button onclick="app.showSection('customer')">Place Order (Customer)</button>
-            <button onclick="app.showSection('staff')">Orders (Staff)</button>
+            <button id="nav-menu" onclick="app.showSection('menu')">Menu Management</button>
+            <button id="nav-customer" onclick="app.showSection('customer')">Place Order</button>
+            <button id="nav-staff" onclick="app.showSection('staff')">Orders</button>
+            <button onclick="auth.logout()">Logout</button>
         </nav>
     </header>
 
     <main>
+        <!-- SECTION 0: Auth -->
+        <section id="auth" class="section">
+            <div class="auth-container">
+                <h2>Welcome</h2>
+                <div id="auth-selection">
+                    <button class="btn-primary" onclick="auth.showLogin('customer')">Customer Login</button>
+                    <button class="btn-secondary" onclick="auth.showLogin('staff')">Staff Login</button>
+                </div>
+
+                <div id="auth-form-container" class="hidden">
+                    <h3 id="auth-title">Login</h3>
+                    <form id="auth-form">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" id="auth-username" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="auth-password" required>
+                        </div>
+                        <input type="hidden" id="auth-role">
+                        <input type="hidden" id="auth-mode" value="login"> <!-- login or signup -->
+
+                        <button type="submit" class="btn-primary" id="auth-submit-btn">Login</button>
+                        <p id="auth-toggle-text">Don't have an account? <a href="#" onclick="auth.toggleMode()">Sign up
+                                here</a></p>
+                        <button type="button" onclick="auth.reset()" class="btn-sm">Back</button>
+                    </form>
+                    <div id="auth-msg" class="msg"></div>
+                </div>
+            </div>
+        </section>
         <!-- SECTION 1: Menu Management -->
         <section id="menu" class="section">
             <h2>Menu Management</h2>
-            
+
             <div class="card form-card">
                 <h3>Add / Update Item</h3>
                 <form id="menu-form">
@@ -62,11 +98,10 @@
         <!-- SECTION 2: Customer View -->
         <section id="customer" class="section hidden">
             <h2>Place Order</h2>
-            
+
             <div class="card form-card">
                 <div class="form-group">
-                    <label>Customer Name:</label>
-                    <input type="text" id="cust-id" placeholder="cus_001">
+                    <p><strong>Customer:</strong> <span id="display-cust-id"></span></p>
                 </div>
                 <div class="form-group checkbox-group">
                     <label>
@@ -74,7 +109,7 @@
                         is Priority Order?
                     </label>
                 </div>
-                
+
                 <hr>
 
                 <div class="form-group">
@@ -96,8 +131,14 @@
                 </div>
 
                 <button id="place-order-btn" class="btn-primary">Place Order</button>
-                
+
                 <div id="order-result" class="msg"></div>
+
+                <div id="customer-orders-container"
+                    style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
+                    <h3>My Recent Orders</h3>
+                    <div id="my-orders-list"></div>
+                </div>
             </div>
         </section>
 
@@ -122,6 +163,8 @@
         </section>
     </main>
 
+    <script src="auth.js"></script>
     <script src="app.js"></script>
 </body>
+
 </html>
