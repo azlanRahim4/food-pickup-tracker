@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Pickup Tracker MVP</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header>
+        <h1>Food Order Pickup Tracker</h1>
+        <nav>
+            <button onclick="app.showSection('menu')">Menu Management</button>
+            <button onclick="app.showSection('customer')">Place Order (Customer)</button>
+            <button onclick="app.showSection('staff')">Orders (Staff)</button>
+        </nav>
+    </header>
+
+    <main>
+        <!-- SECTION 1: Menu Management -->
+        <section id="menu" class="section">
+            <h2>Menu Management</h2>
+            
+            <div class="card form-card">
+                <h3>Add / Update Item</h3>
+                <form id="menu-form">
+                    <div class="form-group">
+                        <label>Item Name:</label>
+                        <input type="text" id="menu-name" placeholder="e.g. Chicken Sub" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Price:</label>
+                        <input type="number" id="menu-price" placeholder="1300" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Available Qty:</label>
+                        <input type="number" id="menu-qty" placeholder="10" min="0" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Save Item</button>
+                </form>
+                <div id="menu-msg" class="msg"></div>
+            </div>
+
+            <div class="card">
+                <h3>Current Menu</h3>
+                <table id="menu-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Menu items will be injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SECTION 2: Customer View -->
+        <section id="customer" class="section hidden">
+            <h2>Place Order</h2>
+            
+            <div class="card form-card">
+                <div class="form-group">
+                    <label>Customer Name:</label>
+                    <input type="text" id="cust-id" placeholder="cus_001">
+                </div>
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="cust-priority">
+                        is Priority Order?
+                    </label>
+                </div>
+                
+                <hr>
+
+                <div class="form-group">
+                    <label>Select Item:</label>
+                    <select id="cust-menu-select">
+                        <option value="">-- Choose Item --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Quantity:</label>
+                    <input type="number" id="cust-qty" value="1" min="1">
+                </div>
+                <button id="add-to-cart-btn" class="btn-secondary">Add Item</button>
+
+                <div id="cart-container">
+                    <h4>Your Cart:</h4>
+                    <ul id="cart-list"></ul>
+                    <p><strong>Total Estimated: <span id="cart-total">0</span></strong></p>
+                </div>
+
+                <button id="place-order-btn" class="btn-primary">Place Order</button>
+                
+                <div id="order-result" class="msg"></div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: Staff View -->
+        <section id="staff" class="section hidden">
+            <h2>Active Orders (Kitchen/Staff)</h2>
+            <div class="controls">
+                <button onclick="app.loadActiveOrders()">Refresh Now</button>
+                <span id="auto-refresh-timer">Auto-refresh active</span>
+            </div>
+
+            <div id="orders-list" class="orders-grid">
+                <!-- Active orders go here -->
+                <p>Loading active orders...</p>
+            </div>
+
+            <hr>
+            <button id="debug-view-btn" class="btn-sm">View All Orders (Debug / History)</button>
+            <div id="debug-orders-list" class="orders-grid hidden">
+                <!-- All orders go here -->
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
